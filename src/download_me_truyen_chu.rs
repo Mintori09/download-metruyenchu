@@ -1,6 +1,7 @@
 use crate::{cookies::create_cookies, model::Chapter};
 use headless_chrome::Browser;
 use regex::Regex;
+use std::path::Path;
 use std::{
     fs::{self},
     thread,
@@ -88,8 +89,6 @@ fn format_content(content: String) -> String {
     }
     text
 }
-
-use std::path::Path;
 
 fn sanitize_filename(name: &str) -> String {
     // Tạo thư mục download nếu chưa có
