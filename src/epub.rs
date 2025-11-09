@@ -86,9 +86,31 @@ fn markdown_to_html(path: &Path) -> io::Result<String> {
 "#
     );
 
-    // Chuyển từng dòng thành <p>
-    for line in content.lines().filter(|l| !l.trim().is_empty()) {
-        html.push_str(&format!("<p>{}</p>\n", line.trim()));
+    let all_lines: Vec<&str> = content
+        .lines()
+        .map(|l| l.trim())
+        .filter(|l| !l.trim().is_empty())
+        .collect();
+
+    if let Some(first_line) = all_lines.first() {
+        if first_line.to_lowercase().contains("chương") {
+            // First <h3>
+            html.push_str(&format!("<h3>{}</h3>\n", first_line));
+
+            for line in all_lines.iter().skip(1) {
+                html.push_str(&format!("<p>{}</p>\n", line));
+            }
+        } else {
+            // Add <h3> from title
+            html.push_str(&format!("<h3>{}</h3>\n", title));
+
+            for line in all_lines.iter() {
+                html.push_str(&format!("<p>{}</p>\n", line));
+            }
+        }
+    } else {
+        // Add title if empty
+        html.push_str(&format!("<h3>{}</h3>\n", title));
     }
 
     html.push_str("</body></html>");
@@ -144,16 +166,20 @@ pub fn epub_build(epub_metadata: &EpubMetadata) -> Result<(), Box<dyn std::error
 
     // CSS gọn hơn
     let css = r#"
-p {
-    text-indent: 1.5em;
-    margin-top: 0;
-    margin-bottom: 1em;
-    line-height: 1.6;
-}
-p.first-line {
-    text-indent: 0;
-}
-"#;
+        h3 {
+            text-align: center;
+        }
+        p {
+            text-indent: 1.5em;
+            margin-top: 0;
+            margin-bottom: 1em;
+            line-height: 1.6;
+            text-align: justify;
+        }
+        p.first-line {
+            text-indent: 0;
+        }
+    "#;
 
     // Ảnh bìa
     let image_data = read_image("cover.png")?;

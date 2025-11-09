@@ -36,7 +36,7 @@ pub fn download_me_truyen_chu(file_path: &str) -> Result<(), Box<dyn std::error:
         tab.wait_until_navigated()?;
 
         if tab.wait_for_element("#chapter-content").is_err() {
-            eprintln!("⚠️  Không tìm thấy nội dung cho {}", chap.name);
+            eprintln!("Không tìm thấy nội dung cho {}", chap.name);
             continue;
         }
 
